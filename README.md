@@ -1,6 +1,6 @@
-# DNS_Probe
+# DeNniS
 
-DNS_Probe is a DNS probe and reporting application designed to work seamlessly with Cloud, On-Premises, and Active Directory DNS servers. This utility is crafted to perform DNS queries for user-specified records or domains, analyze the responses, and provide comprehensive reports.
+DeNniS is a DNS probe and reporting application designed to work seamlessly with Cloud, On-Premises, and Active Directory DNS servers. This utility is crafted to perform DNS queries for user-specified records or domains, analyze the responses, and provide comprehensive reports.
 
 ## Features
 
