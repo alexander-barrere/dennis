@@ -11,6 +11,9 @@ const io = socketIo(server);
 const dnsRoute = require('./routes/dnsRoute');
 const baseRoute = require('./routes/baseRoute');
 
+const cors = require('cors');
+app.use(cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

@@ -26,8 +26,10 @@ const GraphicalDisplay = ({ dnsResponse }) => {
   useEffect(() => {
     if (dnsResponse && dnsResponse.data && Array.isArray(dnsResponse.data.answers)) {
       drawChart(dnsResponse.data.answers);
+    } else {
+      console.error('dnsResponse or dnsResponse.data is null or dnsResponse.data.answers is not an array', dnsResponse);
     }
-  }, [dnsResponse]);
+  }, [dnsResponse]);  
 
   return (
     <div>
