@@ -1,63 +1,50 @@
-import React, { useEffect, useRef, useState } from 'react';
-import * as d3 from 'd3';
+import React, { useEffect, useState } from 'react';
+import { PieChart, Pie, Tooltip, Cell, Legend } from 'recharts';
 import styles from './GraphicalDisplay.module.css';
 
 const GraphicalDisplay = ({ dnsResponse }) => {
-  const chartRef = useRef(null);
-  const [tooltip, setTooltip] = useState({ visible: false, content: '', x: 0, y: 0 });
-
-  const drawChart = (answers) => {
-    const svg = d3.select(chartRef.current);
-    const margin = 50;
-    const width = 600 - 2 * margin;
-    const height = 400 - 2 * margin;
-
-    svg.selectAll('*').remove();
-
-    const chart = svg.append('g').attr('transform', `translate(${margin}, ${margin})`);
-
-    const yScale = d3.scaleLinear().range([height, 0]).domain([0, Math.max(...answers.map(d => d.ttl))]);
-    chart.append('g').call(d3.axisLeft(yScale));
-
-    const xScale = d3.scaleBand().range([0, width]).domain(answers.map(d => d.name)).padding(0.2);
-    chart.append('g').attr('transform', `translate(0, ${height})`).call(d3.axisBottom(xScale));
-
-    chart.selectAll().data(answers).enter().append('rect')
-      .attr('class', styles.bar) // Apply bar style
-      .attr('x', d => xScale(d.name))
-      .attr('y', d => yScale(d.ttl))
-      .attr('height', d => height - yScale(d.ttl))
-      .attr('width', xScale.bandwidth())
-      .on('mouseover', (event, d) => {
-        setTooltip({
-          visible: true,
-          content: `TTL: ${d.ttl}, Name: ${d.name}`,
-          x: event.pageX,
-          y: event.pageY
-        });
-      })
-      .on('mouseout', () => {
-        setTooltip({ visible: false, content: '', x: 0, y: 0 });
-      });
-  };
+  const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
     if (dnsResponse && dnsResponse.data && Array.isArray(dnsResponse.data.answers)) {
-      drawChart(dnsResponse.data.answers);
+      // Create a summary of record types
+      const summary = dnsResponse.data.answers.reduce((acc, item) => {
+        acc[item.type] = (acc[item.type] || 0) + 1;
+        return acc;
+      }, {});
+
+      // Convert summary to array suitable for the pie chart
+      const chartData = Object.keys(summary).map(key => ({
+        name: key,
+        value: summary[key],
+      }));
+
+      setChartData(chartData);
     }
   }, [dnsResponse]);
 
+  // Define an array of color class names that correspond to the classes defined in the CSS module
+  const colorClasses = [styles.color0, styles.color1, styles.color2, styles.color3];
+
   return (
-    <div>
-      <svg ref={chartRef} width={600} height={400} className={styles.chart}></svg>
-      {tooltip.visible && (
-        <div 
-          className={styles.tooltip}
-          style={{ left: `${tooltip.x}px`, top: `${tooltip.y}px` }}
+    <div className={styles.chartContainer}>
+      <PieChart width={730} height={250}>
+        <Pie
+          data={chartData}
+          dataKey="value"
+          nameKey="name"
+          cx="50%"
+          cy="50%"
+          outerRadius={80}
+          label
         >
-          {tooltip.content}
-        </div>
-      )}
+          {chartData.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={colorClasses[index % colorClasses.length]} />
+          ))}
+        </Pie>
+        <Tooltip />
+        <Legend />
+      </PieChart>
     </div>
   );
 };

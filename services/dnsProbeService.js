@@ -1,90 +1,43 @@
 const dgram = require('dgram');
-const net = require('net');
 const dnsPacket = require('dns-packet');
 
 const DNS_SERVERS = ['1.1.1.1', '8.8.8.8'];
 const DNS_PORT = 53;
+const RECORD_TYPES = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'TXT', 'SRV'];
 
 function constructDnsPacket(domain, recordType, dnssec) {
-  const questions = [{ type: recordType, name: domain }];
-  const additionals = dnssec ? [{
-    type: 'OPT',
-    name: '.',
-    udpPayloadSize: 4096,
-    flags: dnsPacket.DNSSEC_OK,
-  }] : [];
-
-  return dnsPacket.encode({
-    type: 'query',
-    questions: questions,
-    additionals: additionals
-  });
+  // ... keep this function unchanged ...
 }
 
-async function queryDNSOverUDP(domain, recordType, dnssec = false) {
-  const packet = constructDnsPacket(domain, recordType, dnssec);
-  const client = dgram.createSocket('udp4');
-  return new Promise((resolve, reject) => {
-    client.send(packet, DNS_PORT, DNS_SERVERS[0], (error) => {
-      if (error) {
-        client.close();
-        reject(error);
-        return;
-      }
-      client.on('message', (message) => {
-        client.close();
-        const response = dnsPacket.decode(message);
-        resolve(response);
+async function queryDNS(domain, dnssec = false) {
+  let allAnswers = [];
+  for (const recordType of RECORD_TYPES) {
+    const packet = constructDnsPacket(domain, recordType, dnssec);
+    const client = dgram.createSocket('udp4');
+    try {
+      const message = await new Promise((resolve, reject) => {
+        client.send(packet, DNS_PORT, DNS_SERVERS[0], (error) => {
+          if (error) {
+            client.close();
+            reject(error);
+            return;
+          }
+          client.on('message', (msg) => {
+            client.close();
+            resolve(msg);
+          });
+        });
       });
-    });
-  });
-}
-
-async function queryDNSOverTCP(domain, recordType, dnssec = false) {
-  const packet = constructDnsPacket(domain, recordType, dnssec);
-  const lengthBuffer = Buffer.alloc(2);
-  lengthBuffer.writeUInt16BE(packet.length, 0);
-  const tcpPacket = Buffer.concat([lengthBuffer, packet]);
-  const client = new net.Socket();
-  return new Promise((resolve, reject) => {
-    client.connect(DNS_PORT, DNS_SERVERS[0], () => {
-      client.write(tcpPacket);
-    });
-    let dataBuffer = Buffer.alloc(0);
-    client.on('data', (data) => {
-      dataBuffer = Buffer.concat([dataBuffer, data]);
-      if (dataBuffer.length > 2) {
-        const expectedLength = dataBuffer.readUInt16BE();
-        if (dataBuffer.length >= expectedLength + 2) {
-          const responsePacket = dataBuffer.slice(2);
-          const response = dnsPacket.decode(responsePacket);
-          resolve(response);
-          client.destroy();
-        }
-      }
-    });
-    client.on('error', (error) => {
-      client.destroy();
-      reject(error);
-    });
-    client.on('close', () => {
-      reject(new Error('Connection closed prematurely.'));
-    });
-  });
-}
-
-async function queryDNSWithDNSSEC(domain, recordType, protocol = 'UDP') {
-  if(protocol === 'UDP') {
-    return queryDNSOverUDP(domain, recordType, true);
-  } else if(protocol === 'TCP') {
-    return queryDNSOverTCP(domain, recordType, true);
-  } else {
-    throw new Error(`Unsupported protocol: ${protocol}. Use 'UDP' or 'TCP'.`);
+      const response = dnsPacket.decode(message);
+      allAnswers = allAnswers.concat(response.answers);
+    } catch (error) {
+      console.error(`Error querying ${recordType} record for domain ${domain}:`, error);
+      // Continue querying the next record type even if the current one fails
+    }
   }
+  return { answers: allAnswers };
 }
 
 module.exports = {
-  queryDNSOverUDP,
-  queryDNSOverTCP,
-  queryDNSWithDNSSEC
+  queryDNS
 };

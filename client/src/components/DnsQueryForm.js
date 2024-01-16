@@ -4,12 +4,11 @@ import axios from '../utils/api';
 
 const DnsQueryForm = ({ setDnsResponse }) => {
   const [domain, setDomain] = useState('');
-  const [recordType, setRecordType] = useState('A');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post('/dns/probe', { domain, recordType });
+      const response = await axios.post('/dns/probe', { domain });
       setDnsResponse(response.data);
     } catch (error) {
       console.error(`Error: ${error}`);
@@ -27,20 +26,6 @@ const DnsQueryForm = ({ setDnsResponse }) => {
           value={domain}
           onChange={(e) => setDomain(e.target.value)}
         />
-      </Form.Group>
-      <Form.Group>
-        <Form.Label>Record Type:</Form.Label>
-        <Form.Control
-          as='select'
-          value={recordType}
-          onChange={(e) => setRecordType(e.target.value)}
-        >
-          <option value='A'>A</option>
-          <option value='AAAA'>AAAA</option>
-          <option value='CNAME'>CNAME</option>
-          <option value='MX'>MX</option>
-          <option value='TXT'>TXT</option>
-        </Form.Control>
       </Form.Group>
       <Button variant='primary' type='submit'>
         Probe DNS
