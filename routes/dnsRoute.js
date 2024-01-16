@@ -10,25 +10,18 @@ const fs = require('fs');
 const models = initModels(require('../database/sequelize'));
 
 router.post('/probe', async (req, res) => {
-    const { domain, recordType, protocol, dnssec } = req.body;
+    const { domain, dnssec } = req.body;  // Removed 'recordType' and 'protocol'
 
     try {
-        let response;
-        if (dnssec) {
-            response = await dnsProbeService.queryDNSWithDNSSEC(domain, recordType, protocol);
-        } else {
-            response = protocol === 'UDP' ?
-                await dnsProbeService.queryDNSOverUDP(domain, recordType) :
-                await dnsProbeService.queryDNSOverTCP(domain, recordType);
-        }
-        await models.ProbeRecord.create({
-            domain: domain,
-            record_type: recordType,
-            data: response.answers
-        });
+        // Use the queryDNS function instead of queryDNSOverTCP
+        let response = await dnsProbeService.queryDNS(domain, dnssec);
+
+        // Process and save the response as needed
+        // ...
 
         res.json({ success: true, data: response });
     } catch (error) {
+        console.error("Error occurred in /dns/probe:", error);
         res.status(500).json({ success: false, message: error.message });
     }
 });

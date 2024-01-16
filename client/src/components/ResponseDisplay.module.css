@@ -1,0 +1,33 @@
+.responseContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.responseCard {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 600px;
+    /* Adjust as needed */
+    width: 100%;
+}
+
+.responseTitle {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.responseText {
+    white-space: pre-wrap;
+    /* To wrap the JSON response */
+    color: #666;
+    overflow-x: auto;
+    /* For horizontal scrolling if needed */
+}
+
+.noResultsText {
+    color: #666;
+}

@@ -6,8 +6,19 @@ const DNS_PORT = 53;
 const RECORD_TYPES = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'TXT', 'SRV'];
 
 function constructDnsPacket(domain, recordType, dnssec) {
-  // ... keep this function unchanged ...
+  // Example packet construction logic
+  const packet = dnsPacket.encode({
+      type: 'query',
+      questions: [{
+          type: recordType,
+          name: domain
+      }],
+      // Additional DNSSEC or other settings
+  });
+
+  return packet; // This should return a buffer
 }
+
 
 async function queryDNS(domain, dnssec = false) {
   let allAnswers = [];

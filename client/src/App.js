@@ -9,7 +9,7 @@ const App = () => {
 
   return (
     <Container>
-      <h1>DNS Probe</h1>
+      <h1>DeNniS</h1>
       <DnsQueryForm setDnsResponse={setDnsResponse} />
       <ResponseDisplay dnsResponse={dnsResponse} />
       <GraphicalDisplay dnsResponse={dnsResponse} />

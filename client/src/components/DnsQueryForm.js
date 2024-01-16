@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Form, Button } from 'react-bootstrap';
 import axios from '../utils/api';
+import styles from './DnsQueryForm.module.css';
 
 const DnsQueryForm = ({ setDnsResponse }) => {
   const [domain, setDomain] = useState('');
@@ -17,20 +17,21 @@ const DnsQueryForm = ({ setDnsResponse }) => {
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <Form.Group>
-        <Form.Label>Domain:</Form.Label>
-        <Form.Control
-          type='text'
-          placeholder='Enter domain'
+    <div className={styles.formContainer}>
+      <form onSubmit={handleSubmit} className={styles.dnsForm}>
+        <label className={styles.dnsLabel}>Domain:</label>
+        <input 
+          type="text"
+          className={styles.dnsInput}
+          placeholder="Enter domain"
           value={domain}
           onChange={(e) => setDomain(e.target.value)}
         />
-      </Form.Group>
-      <Button variant='primary' type='submit'>
-        Probe DNS
-      </Button>
-    </Form>
+        <button type="submit" className={styles.dnsButton}>
+          Probe DNS
+        </button>
+      </form>
+    </div>
   );
 };
 

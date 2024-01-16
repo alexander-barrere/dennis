@@ -1,20 +1,20 @@
 import React from 'react';
-import { Card } from 'react-bootstrap';
+import styles from './ResponseDisplay.module.css'; // Assuming you'll create this CSS module
 
 const ResponseDisplay = ({ dnsResponse }) => {
   return (
-    <Card>
-      <Card.Body>
+    <div className={styles.responseContainer}>
+      <div className={styles.responseCard}>
         {dnsResponse ? (
           <div>
-            <Card.Title>Results:</Card.Title>
-            <pre>{JSON.stringify(dnsResponse, null, 2)}</pre>
+            <h5 className={styles.responseTitle}>Results:</h5>
+            <pre className={styles.responseText}>{JSON.stringify(dnsResponse, null, 2)}</pre>
           </div>
         ) : (
-          <Card.Text>No results to display</Card.Text>
+          <p className={styles.noResultsText}>No results to display</p>
         )}
-      </Card.Body>
-    </Card>
+      </div>
+    </div>
   );
 };
 
