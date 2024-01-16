@@ -1,8 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
+import styles from './GraphicalDisplay.module.css';
 
 const GraphicalDisplay = ({ dnsResponse }) => {
   const chartRef = useRef(null);
+  const [tooltip, setTooltip] = useState({ visible: false, content: '', x: 0, y: 0 });
 
   const drawChart = (answers) => {
     const svg = d3.select(chartRef.current);
@@ -20,20 +22,42 @@ const GraphicalDisplay = ({ dnsResponse }) => {
     const xScale = d3.scaleBand().range([0, width]).domain(answers.map(d => d.name)).padding(0.2);
     chart.append('g').attr('transform', `translate(0, ${height})`).call(d3.axisBottom(xScale));
 
-    chart.selectAll().data(answers).enter().append('rect').attr('x', d => xScale(d.name)).attr('y', d => yScale(d.ttl)).attr('height', d => height - yScale(d.ttl)).attr('width', xScale.bandwidth());
+    chart.selectAll().data(answers).enter().append('rect')
+      .attr('class', styles.bar) // Apply bar style
+      .attr('x', d => xScale(d.name))
+      .attr('y', d => yScale(d.ttl))
+      .attr('height', d => height - yScale(d.ttl))
+      .attr('width', xScale.bandwidth())
+      .on('mouseover', (event, d) => {
+        setTooltip({
+          visible: true,
+          content: `TTL: ${d.ttl}, Name: ${d.name}`,
+          x: event.pageX,
+          y: event.pageY
+        });
+      })
+      .on('mouseout', () => {
+        setTooltip({ visible: false, content: '', x: 0, y: 0 });
+      });
   };
 
   useEffect(() => {
     if (dnsResponse && dnsResponse.data && Array.isArray(dnsResponse.data.answers)) {
       drawChart(dnsResponse.data.answers);
-    } else {
-      console.error('dnsResponse or dnsResponse.data is null or dnsResponse.data.answers is not an array', dnsResponse);
     }
-  }, [dnsResponse]);  
+  }, [dnsResponse]);
 
   return (
     <div>
-      <svg ref={chartRef} width={600} height={400}></svg>
+      <svg ref={chartRef} width={600} height={400} className={styles.chart}></svg>
+      {tooltip.visible && (
+        <div 
+          className={styles.tooltip}
+          style={{ left: `${tooltip.x}px`, top: `${tooltip.y}px` }}
+        >
+          {tooltip.content}
+        </div>
+      )}
     </div>
   );
 };

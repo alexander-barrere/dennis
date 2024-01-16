@@ -1,0 +1,57 @@
+/* GraphicalDisplay.module.css */
+
+.chart {
+    /* Add styles for the SVG chart container */
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tooltip {
+    /* Styles for the tooltip */
+    background-color: white;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px 10px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    /* Prevents the tooltip from interfering with other mouse events */
+    position: absolute;
+    z-index: 10;
+}
+
+.bar {
+    /* Style for the bars in the bar chart */
+    fill: steelblue;
+    transition: fill 0.3s ease;
+}
+
+.bar:hover {
+    /* Style for bars when hovered */
+    fill: darkorange;
+}
+
+.axis {
+    /* Style for the chart axes */
+    font-size: 12px;
+    color: #666;
+}
+
+.axis line,
+.axis path {
+    /* Style for the axis lines */
+    fill: none;
+    stroke: #888;
+    shape-rendering: crispEdges;
+}
+
+.axis-label {
+    /* Style for the axis labels */
+    font-size: 14px;
+    font-weight: bold;
+    text-anchor: middle;
+}
