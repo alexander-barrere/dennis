@@ -1,7 +1,7 @@
 const dgram = require('dgram');
 const dnsPacket = require('dns-packet');
 
-const DNS_SERVERS = ['1.1.1.1', '8.8.8.8'];
+const DNS_SERVERS = ['10.10.10.10', '10.10.10.20'];
 const DNS_PORT = 53;
 const RECORD_TYPES = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'TXT', 'SRV'];
 
@@ -40,6 +40,7 @@ async function queryDNS(domain, dnssec = false) {
         });
       });
       const response = dnsPacket.decode(message);
+      console.log(`Response from DNS query for ${recordType}:`, response);
       allAnswers = allAnswers.concat(response.answers);
     } catch (error) {
       console.error(`Error querying ${recordType} record for domain ${domain}:`, error);
