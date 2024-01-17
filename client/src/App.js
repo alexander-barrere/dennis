@@ -14,7 +14,7 @@ const App = () => {
       <div className="header">
         <img src="/img/dennis.png" alt="DeNniS logo" className="logo" />
         <h1>
-          <span className="colorize">D</span>.e<span className="colorize">N</span>.ni<span className="colorize">S</span>. System
+          The <span className="colorize">D</span>.e<span className="colorize">N</span>.ni<span className="colorize">S</span>. System
         </h1>
       </div>
       <DnsQueryForm setDnsResponse={setDnsResponse} />
