@@ -1,6 +1,8 @@
-# DeNniS
+<img src="./client/public/img/dennis.png" alt="drawing" style="width:200px;"/>
 
-DeNniS is a DNS probe and reporting application designed to work seamlessly with Cloud, On-Premises, and Active Directory DNS servers. This utility is crafted to perform DNS queries for user-specified records or domains, analyze the responses, and provide comprehensive reports.
+# The D.eN.niS. System
+
+The D.eN.niS. System is a DNS probe and reporting application designed to work seamlessly with Cloud, On-Premises, and Active Directory DNS servers. This utility is crafted to perform DNS queries for user-specified records or domains, analyze the responses, and provide comprehensive reports.
 
 ## Features
 
