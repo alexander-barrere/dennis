@@ -12,7 +12,7 @@ const App = () => {
     <Container>
       <div className="header">
         <img src="/img/dennis.png" alt="DeNniS logo" className="logo" />
-        <h1>DeNniS</h1>
+        <h1>The D.eN.niS. System</h1>
       </div>
       <DnsQueryForm setDnsResponse={setDnsResponse} />
       <ResponseDisplay dnsResponse={dnsResponse} />
