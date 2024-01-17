@@ -2,29 +2,28 @@ import React from 'react';
 import styles from './JsonTable.module.css';
 
 const JsonTable = ({ jsonData }) => {
-    if (!jsonData) {
+    // Ensure jsonData is an array
+    if (!Array.isArray(jsonData) || jsonData.length === 0) {
         return <p>No data available</p>;
     }
 
-    const renderValue = (value) => {
-        if (Array.isArray(value)) {
-            return value.map((item, idx) =>
-                typeof item === 'object' ? (
-                    <div key={idx} className={styles.subTable}>
-                        {Object.entries(item).map(([key, val], index) => (
-                            <div key={index}>
-                                <strong>{key}:</strong> {val.toString()}
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div key={idx}>{item}</div>
-                )
-            );
-        } else if (value && typeof value === 'object') {
-            return JSON.stringify(value, null, 2);
-        } else {
-            return value;
+    // Helper function to render record values
+    const renderValue = (record) => {
+        if (record.Error) {
+            return record.Error;
+        }
+
+        if (record.Values) {
+            // Check if the record.Values is an array of arrays for TXT records
+            if (record.Type === 'TXT') {
+                return record.Values.map((txtArray) => txtArray.join('')).join(', ');
+            }
+            // Check if the record.Values is an array of objects for MX records
+            else if (record.Type === 'MX') {
+                return record.Values.map((mx) => `${mx.exchange} (Priority: ${mx.priority})`).join(', ');
+            }
+            // For other record types like A, AAAA, NS
+            return record.Values.join(', ');
         }
     };
 
@@ -32,19 +31,17 @@ const JsonTable = ({ jsonData }) => {
         <table className={styles.table}>
             <thead>
                 <tr>
-                    {Object.keys(jsonData).map((key, index) => (
-                        <th key={index} className={styles.th}>{key}</th>
-                    ))}
+                    <th>Type</th>
+                    <th>Value</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    {Object.values(jsonData).map((value, index) => (
-                        <td key={index} className={styles.td}>
-                            {renderValue(value)}
-                        </td>
-                    ))}
-                </tr>
+                {jsonData.map((record, index) => (
+                    <tr key={index}>
+                        <td>{record.Type}</td>
+                        <td>{renderValue(record)}</td>
+                    </tr>
+                ))}
             </tbody>
         </table>
     );
