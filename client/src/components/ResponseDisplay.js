@@ -2,16 +2,16 @@ import React from 'react';
 import JsonTable from './JsonTable'; // Import the JsonTable component
 
 const ResponseDisplay = ({ dnsResponse }) => {
-  if (!dnsResponse) {
+  // Check if dnsResponse has data
+  if (!dnsResponse || !dnsResponse.data) {
     return <p>No results to display</p>;
   }
 
-  // If dnsResponse is not an array, convert it into one
-  const dnsResponseArray = Array.isArray(dnsResponse) ? dnsResponse : [dnsResponse];
-
+  // Pass the data array directly to the JsonTable component
   return (
     <div>
-      <JsonTable jsonData={dnsResponseArray} />
+      {/* Render the JsonTable component with the dnsResponse data */}
+      <JsonTable jsonData={dnsResponse.data} />
     </div>
   );
 };
