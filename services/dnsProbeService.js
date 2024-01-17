@@ -1,7 +1,7 @@
 const dgram = require('dgram');
 const dnsPacket = require('dns-packet');
 
-const DNS_SERVERS = ['10.10.10.10', '10.10.10.20'];
+const DNS_SERVERS = ['1.1.1.1', '8.8.8.8'];
 const DNS_PORT = 53;
 const RECORD_TYPES = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'TXT', 'SRV'];
 
