@@ -1,33 +1,13 @@
 .responseContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
+    display: grid;
+    grid-gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    /* Adjust as needed */
 }
 
 .responseCard {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    max-width: 600px;
-    /* Adjust as needed */
-    width: 100%;
-}
-
-.responseTitle {
-    margin-bottom: 15px;
-    color: #333;
-}
-
-.responseText {
-    white-space: pre-wrap;
-    /* To wrap the JSON response */
-    color: #666;
-    overflow-x: auto;
-    /* For horizontal scrolling if needed */
-}
-
-.noResultsText {
-    color: #666;
+    /* Style your cards here */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

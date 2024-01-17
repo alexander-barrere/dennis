@@ -1,54 +1,32 @@
-const dgram = require('dgram');
-const dnsPacket = require('dns-packet');
+const dns = require('dns');
+const util = require('util');
 
 const DNS_SERVERS = ['1.1.1.1', '8.8.8.8'];
 const DNS_PORT = 53;
 const RECORD_TYPES = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'TXT', 'SRV'];
 
-function constructDnsPacket(domain, recordType, dnssec) {
-  // Example packet construction logic
-  const packet = dnsPacket.encode({
-      type: 'query',
-      questions: [{
-          type: recordType,
-          name: domain
-      }],
-      // Additional DNSSEC or other settings
-  });
-
-  return packet; // This should return a buffer
-}
-
-
-async function queryDNS(domain, dnssec = false) {
-  let allAnswers = [];
-  for (const recordType of RECORD_TYPES) {
-    const packet = constructDnsPacket(domain, recordType, dnssec);
-    const client = dgram.createSocket('udp4');
+async function queryDNS(domain, recordTypes = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'TXT', 'SRV']) {
+  let results = {};
+  for (const type of recordTypes) {
     try {
-      const message = await new Promise((resolve, reject) => {
-        client.send(packet, DNS_PORT, DNS_SERVERS[0], (error) => {
-          if (error) {
-            client.close();
-            reject(error);
-            return;
-          }
-          client.on('message', (msg) => {
-            client.close();
-            resolve(msg);
-          });
-        });
-      });
-      const response = dnsPacket.decode(message);
-      console.log(`Response from DNS query for ${recordType}:`, response);
-      allAnswers = allAnswers.concat(response.answers);
+      results[type] = await resolve[type](domain);
     } catch (error) {
-      console.error(`Error querying ${recordType} record for domain ${domain}:`, error);
-      // Continue querying the next record type even if the current one fails
+      console.error(`Error querying ${type} record for domain ${domain}:`, error);
+      results[type] = `Error: ${error.message}`;
     }
   }
-  return { answers: allAnswers };
+  return results;
 }
+
+const resolve = {
+  A: util.promisify(dns.resolve4),
+  AAAA: util.promisify(dns.resolve6),
+  CNAME: util.promisify(dns.resolveCname),
+  MX: util.promisify(dns.resolveMx),
+  NS: util.promisify(dns.resolveNs),
+  TXT: util.promisify(dns.resolveTxt),
+  SRV: util.promisify(dns.resolveSrv)
+};
 
 module.exports = {
   queryDNS

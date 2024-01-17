@@ -1,0 +1,35 @@
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.th {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    text-align: left;
+    font-size: 14px;
+}
+
+.td {
+    padding: 10px 15px;
+    border-top: 1px solid #ddd;
+    background-color: white;
+    color: #333;
+    font-size: 14px;
+}
+
+.tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* In JsonTable.module.css */
+.subTable {
+    background-color: #f9f9f9;
+    padding: 5px;
+    border: 1px solid #eaeaea;
+    margin-top: 5px;
+    border-radius: 4px;
+}

@@ -1,0 +1,14 @@
+.header {
+    display: flex;
+    align-items: center;
+    /* Aligns items vertically in the center */
+    margin-bottom: 20px;
+    /* Adds some space below the header */
+}
+
+.logo {
+    height: 50px;
+    /* Adjust the size of the logo as needed */
+    margin-right: 10px;
+    /* Adds some space between the logo and the title */
+}

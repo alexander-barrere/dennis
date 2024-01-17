@@ -1,19 +1,17 @@
 import React from 'react';
-import styles from './ResponseDisplay.module.css'; // Assuming you'll create this CSS module
+import JsonTable from './JsonTable'; // Import the JsonTable component
 
 const ResponseDisplay = ({ dnsResponse }) => {
+  if (!dnsResponse) {
+    return <p>No results to display</p>;
+  }
+
+  // If dnsResponse is not an array, convert it into one
+  const dnsResponseArray = Array.isArray(dnsResponse) ? dnsResponse : [dnsResponse];
+
   return (
-    <div className={styles.responseContainer}>
-      <div className={styles.responseCard}>
-        {dnsResponse ? (
-          <div>
-            <h5 className={styles.responseTitle}>Results:</h5>
-            <pre className={styles.responseText}>{JSON.stringify(dnsResponse, null, 2)}</pre>
-          </div>
-        ) : (
-          <p className={styles.noResultsText}>No results to display</p>
-        )}
-      </div>
+    <div>
+      <JsonTable jsonData={dnsResponseArray} />
     </div>
   );
 };
