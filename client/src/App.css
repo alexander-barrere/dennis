@@ -1,0 +1,40 @@
+.header {
+    display: flex;
+    align-items: center;
+    /* Aligns items vertically in the center */
+    margin-bottom: 20px;
+    /* Adds some space below the header */
+}
+
+.title-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Add any additional styling as needed */
+}
+
+.logo {
+    margin-right: 10px;
+    /* Adjust spacing as needed */
+    height: 50px;
+    /* Adjust size as needed */
+    /* Add any additional styling as needed */
+}
+
+.colorize {
+    color: #007bff;
+    /* Replace with the color you want for DNS */
+}
+
+/* You can add media queries for responsive adjustments */
+@media (max-width: 768px) {
+    .logo {
+        height: 30px;
+        /* Smaller logo for mobile */
+    }
+
+    h1 {
+        font-size: 24px;
+        /* Smaller font size for title on mobile */
+    }
+}

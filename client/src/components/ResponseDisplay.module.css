@@ -1,0 +1,13 @@
+.responseContainer {
+    display: grid;
+    grid-gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    /* Adjust as needed */
+}
+
+.responseCard {
+    /* Style your cards here */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

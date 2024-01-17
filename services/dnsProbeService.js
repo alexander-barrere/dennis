@@ -1,90 +1,44 @@
-const dgram = require('dgram');
-const net = require('net');
-const dnsPacket = require('dns-packet');
+const dns = require('dns');
+const util = require('util');
 
-const DNS_SERVERS = ['1.1.1.1', '8.8.8.8'];
-const DNS_PORT = 53;
+// Promisified DNS methods for asynchronous operations
+const resolve = {
+  A: util.promisify(dns.resolve4),
+  AAAA: util.promisify(dns.resolve6),
+  MX: util.promisify(dns.resolveMx),
+  TXT: util.promisify(dns.resolveTxt),
+  CNAME: util.promisify(dns.resolveCname),
+  NS: util.promisify(dns.resolveNs),
+  SOA: util.promisify(dns.resolveSoa),
+  // Add other DNS methods if needed
+};
 
-function constructDnsPacket(domain, recordType, dnssec) {
-  const questions = [{ type: recordType, name: domain }];
-  const additionals = dnssec ? [{
-    type: 'OPT',
-    name: '.',
-    udpPayloadSize: 4096,
-    flags: dnsPacket.DNSSEC_OK,
-  }] : [];
+async function queryDNS(domain, recordTypes = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'TXT', 'SRV']) {
+  let results = [];
 
-  return dnsPacket.encode({
-    type: 'query',
-    questions: questions,
-    additionals: additionals
-  });
-}
-
-async function queryDNSOverUDP(domain, recordType, dnssec = false) {
-  const packet = constructDnsPacket(domain, recordType, dnssec);
-  const client = dgram.createSocket('udp4');
-  return new Promise((resolve, reject) => {
-    client.send(packet, DNS_PORT, DNS_SERVERS[0], (error) => {
-      if (error) {
-        client.close();
-        reject(error);
-        return;
+  for (const type of recordTypes) {
+    try {
+      let records = await resolve[type](domain);
+      // Ensure the records are in an array
+      records = Array.isArray(records) ? records : [records];
+      // Normalize the records based on type
+      if (type === 'A' || type === 'AAAA' || type === 'NS') {
+        results.push({ Type: type, Values: records });
+      } else if (type === 'MX' || type === 'SOA' || type === 'TXT') {
+        // For MX and SOA, assume they're already objects and directly add them
+        // For TXT records, which are arrays of strings, wrap them in an object with a Values array
+        results.push({ Type: type, Values: type === 'TXT' ? records : [records] });
+      } else if (type === 'CNAME' || type === 'SRV') {
+        // Handle other types as needed
       }
-      client.on('message', (message) => {
-        client.close();
-        const response = dnsPacket.decode(message);
-        resolve(response);
-      });
-    });
-  });
-}
-
-async function queryDNSOverTCP(domain, recordType, dnssec = false) {
-  const packet = constructDnsPacket(domain, recordType, dnssec);
-  const lengthBuffer = Buffer.alloc(2);
-  lengthBuffer.writeUInt16BE(packet.length, 0);
-  const tcpPacket = Buffer.concat([lengthBuffer, packet]);
-  const client = new net.Socket();
-  return new Promise((resolve, reject) => {
-    client.connect(DNS_PORT, DNS_SERVERS[0], () => {
-      client.write(tcpPacket);
-    });
-    let dataBuffer = Buffer.alloc(0);
-    client.on('data', (data) => {
-      dataBuffer = Buffer.concat([dataBuffer, data]);
-      if (dataBuffer.length > 2) {
-        const expectedLength = dataBuffer.readUInt16BE();
-        if (dataBuffer.length >= expectedLength + 2) {
-          const responsePacket = dataBuffer.slice(2);
-          const response = dnsPacket.decode(responsePacket);
-          resolve(response);
-          client.destroy();
-        }
-      }
-    });
-    client.on('error', (error) => {
-      client.destroy();
-      reject(error);
-    });
-    client.on('close', () => {
-      reject(new Error('Connection closed prematurely.'));
-    });
-  });
-}
-
-async function queryDNSWithDNSSEC(domain, recordType, protocol = 'UDP') {
-  if(protocol === 'UDP') {
-    return queryDNSOverUDP(domain, recordType, true);
-  } else if(protocol === 'TCP') {
-    return queryDNSOverTCP(domain, recordType, true);
-  } else {
-    throw new Error(`Unsupported protocol: ${protocol}. Use 'UDP' or 'TCP'.`);
+    } catch (error) {
+      results.push({ Type: type, Error: error.message });
+    }
   }
+  
+  return results;
 }
 
 module.exports = {
-  queryDNSOverUDP,
-  queryDNSOverTCP,
-  queryDNSWithDNSSEC
+  queryDNS
 };

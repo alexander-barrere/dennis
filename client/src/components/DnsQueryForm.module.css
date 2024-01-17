@@ -1,0 +1,47 @@
+.formContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30vh;
+    background-color: #f5f5f5;
+}
+
+.dnsForm {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dnsInput {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.dnsButton {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.dnsButton:hover {
+    background-color: #0056b3;
+}
+
+.dnsLabel {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 5px;
+    display: block;
+    /* Ensures the label is on a new line */
+}
