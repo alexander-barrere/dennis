@@ -3,7 +3,7 @@ const util = require('util');
 
 // Create a new resolver instance to set custom DNS servers
 const resolver = new dns.Resolver();
-resolver.setServers(['8.8.8.8', '8.8.4.4']); // Replace with whatever DNS server you want
+resolver.setServers(['8.8.4.4', '8.8.8.8']); // Replace with whatever DNS server you want
 
 // Promisified DNS methods for asynchronous operations using the custom resolver
 const resolve = {

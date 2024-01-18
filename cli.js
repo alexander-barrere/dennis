@@ -6,8 +6,8 @@ const util = require('util');
 const program = new Command();
 
 // Promisify DNS methods
-const resolveSoa = util.promisify(dns.resolveSoa); // Ensure this line is added
-const resolveNs = util.promisify(dns.resolveNs);   // Ensure this line is added
+const resolveSoa = util.promisify(dns.resolveSoa);
+const resolveNs = util.promisify(dns.resolveNs);
 const resolve4 = util.promisify(dns.resolve4);
 const resolve6 = util.promisify(dns.resolve6);
 const resolveMx = util.promisify(dns.resolveMx);
